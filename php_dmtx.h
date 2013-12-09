@@ -31,7 +31,7 @@
 
 #define DMTXWRITE_BUFFER_SIZE 4096
 
-/* Import configure options when building 
+/* Import configure options when building
 	outside of the PHP source tree */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -115,7 +115,7 @@ typedef struct _php_dmtx_write_object  {
 	int  scheme; // added
 } php_dmtx_write_object;
 
-/* Method declarations, dmtx class is just 
+/* Method declarations, dmtx class is just
  * for holding the constants */
 
 /* dmtxRead class */

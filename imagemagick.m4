@@ -66,7 +66,7 @@ AC_DEFUN([IM_FIND_IMAGEMAGICK],[
 
 # This is used later for cflags and libs
   export PKG_CONFIG_PATH="${IM_IMAGEMAGICK_PREFIX}/${PHP_LIBDIR}/pkgconfig"
-  
+
 # Check version
 #
   IM_IMAGEMAGICK_VERSION=`$IM_WAND_BINARY --version`
@@ -126,7 +126,7 @@ AC_DEFUN([IM_FIND_IMAGEMAGICK],[
   else
     AC_MSG_ERROR([Unable to find MagickWand.h or magick-wand.h header])
   fi
-  
+
 #
 # The cflags and libs
 #

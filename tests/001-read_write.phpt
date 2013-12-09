@@ -6,7 +6,7 @@ include dirname(__FILE__) . "/skipif.inc.php";
 ?>
 --FILE--
 <?php
-$w = new dmtxWrite("Hello"); 
+$w = new dmtxWrite("Hello");
 $w->save("test.png", dmtx::SYMBOL_SQUARE_AUTO);
 
 $r = new dmtxRead("test.png");

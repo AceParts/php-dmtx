@@ -146,10 +146,9 @@ static zend_function_entry php_dmtx_read_class_methods[] =
 	PHP_ME(dmtxread, setshrink, dmtxread_setshrink_args, ZEND_ACC_PUBLIC)
 	PHP_ME(dmtxread, setscanregion, dmtxread_setscanregion_args, ZEND_ACC_PUBLIC)
 	PHP_ME(dmtxread, setscheme, dmtxread_setscheme_args, ZEND_ACC_PUBLIC)
-	
+
 	PHP_ME(dmtxread, getinfo, dmtxread_getinfo_args, ZEND_ACC_PUBLIC)
 
-	
 	PHP_ME(dmtxread, gettimeout, dmtxread_empty_args, ZEND_ACC_PUBLIC)
 	PHP_ME(dmtxread, getlimit, dmtxread_empty_args, ZEND_ACC_PUBLIC)
 	PHP_ME(dmtxread, getsymbolshape, dmtxread_empty_args, ZEND_ACC_PUBLIC)
@@ -296,7 +295,7 @@ PHP_METHOD(dmtxread, gettimeout)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
 	}
-	
+
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	RETURN_LONG(intern->options.timeout_ms);
 }
@@ -307,8 +306,8 @@ PHP_METHOD(dmtxread, getlimit)
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
-	}	
-	
+	}
+
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	array_init(return_value);
 	add_assoc_long(return_value, "start", intern->options.start);
@@ -334,7 +333,7 @@ PHP_METHOD(dmtxread, getshrink)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
 	}
-	
+
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	RETURN_LONG(intern->options.shrink);
 }
@@ -353,7 +352,7 @@ PHP_METHOD(dmtxread, settimeout)
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	intern->options.timeout_ms = timeout_ms;
-	
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -389,14 +388,14 @@ PHP_METHOD(dmtxread, setsymbolshape)
 	}
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-	
+
 	if (symbol == DmtxSymbolSquareAuto || symbol == DmtxSymbolSquareCount || 
 		symbol == DmtxSymbolRectAuto || symbol == DmtxSymbolRectCount || symbol == DmtxSymbolShapeAuto) {
 		intern->options.symbol = symbol;
 	} else {
 		PHP_DMTX_THROW_GENERIC_EXCEPTION("Unknown symbol shape");
 	}
-	
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -414,7 +413,7 @@ PHP_METHOD(dmtxread, setshrink)
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	intern->options.shrink = shrink;
-	
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -431,15 +430,15 @@ PHP_METHOD(dmtxread, setscanregion)
 	}
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-	
+
 	intern->scan_region.x_min = (x_min < 0) ? 0 : x_min;
 	intern->scan_region.x_max = x_max;
-	
+
 	intern->scan_region.y_min = (y_min < 0) ? 0 : y_min;
 	intern->scan_region.y_max = y_max;
-	
+
 	intern->scan_region.active = 1;
-	
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -489,14 +488,14 @@ PHP_METHOD(dmtxread, getscheme)
 PHP_METHOD(dmtxread, unsetscanregion)
 {
 	php_dmtx_read_object *intern;
-	
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
 	}
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	intern->scan_region.active = 0;
-	
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -514,9 +513,9 @@ PHP_METHOD(dmtxread, getscanregion)
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	if (!intern->scan_region.active) {
 		return;
-	}	
-	
-	array_init(return_value);	
+	}
+
+	array_init(return_value);
 	add_assoc_long(return_value, "x_min", intern->scan_region.x_min);
 	add_assoc_long(return_value, "x_max", intern->scan_region.x_max);
 	add_assoc_long(return_value, "y_min", intern->scan_region.y_min);
@@ -541,7 +540,7 @@ static zval *_php_dmtx_region_to_array(DmtxDecode *decode, DmtxRegion *region, i
 {
 	zval *array, *edges, *bounds;
 	DmtxMessage *message;
-	
+
 	double rotate;
 	int rotate_int;
 
@@ -555,24 +554,24 @@ static zval *_php_dmtx_region_to_array(DmtxDecode *decode, DmtxRegion *region, i
 	if (!message) {
 		return NULL;
 	}
-	
+
 	MAKE_STD_ZVAL(array);
 	array_init(array);
 
 	add_assoc_string(array, "message", (char *)message->output, 1);
 	add_assoc_long(array, "codewords", message->outputIdx);
-	
+
 	dmtxMessageDestroy(&message);
-	
+
 	rotate = (2 * M_PI) + (atan2(region->fit2raw[0][1], region->fit2raw[1][1]) - atan2(region->fit2raw[1][0], region->fit2raw[0][0])) / 2.0;
 	rotate_int = (int)(rotate * 180/M_PI + 0.5);
-     
+
 	if (rotate_int >= 360) {
 		rotate_int -= 360;
 	}
-	
+
 	add_assoc_long(array, "rotation_angle", rotate_int);
-	
+
 	add_assoc_long(array, "matrix_width", dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, region->sizeIdx) );
 	add_assoc_long(array, "matrix_height", dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, region->sizeIdx) );
 
@@ -583,22 +582,22 @@ static zval *_php_dmtx_region_to_array(DmtxDecode *decode, DmtxRegion *region, i
 
 	MAKE_STD_ZVAL(edges);
 	array_init(edges);
-	
+
 	_add_assoc_pixel(edges, "left", region->leftLoc);
 	_add_assoc_pixel(edges, "bottom", region->bottomLoc);
 	_add_assoc_pixel(edges, "top", region->topLoc);
-	_add_assoc_pixel(edges, "right", region->rightLoc);	
+	_add_assoc_pixel(edges, "right", region->rightLoc);
 
 	MAKE_STD_ZVAL(bounds);
 	array_init(bounds);
-	
+
 	_add_assoc_pixel(bounds, "bound_min", region->boundMin);
 	_add_assoc_pixel(bounds, "bound_max", region->boundMax);
-	
+
 	/* Add edges and bounds to return array */
 	add_assoc_zval(array, "edges", edges);
 	add_assoc_zval(array, "bounds", bounds);
-	
+
 	return array;
 }
 /* }}} */
@@ -610,7 +609,7 @@ PHP_METHOD(dmtxread, getinfo)
 	php_dmtx_read_object *intern;
 	long scan_gap = 1, corrections = DmtxUndefined, type = PHP_DMTX_MATRIX;
 	DmtxTime timeout;
-	
+
 	long i, j, start, limit;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|lbla", &scan_gap, &corrections, &type) == FAILURE) {
@@ -623,7 +622,6 @@ PHP_METHOD(dmtxread, getinfo)
 
 	intern = (php_dmtx_read_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 
-    
 	/* init the return value as an array */
 	array_init(return_value);
 
@@ -658,22 +656,22 @@ PHP_METHOD(dmtxread, getinfo)
 			break;
 		}
 		j++;
-		
+
 		/* Get image */
 		image = php_create_dmtx_image_from_wand(intern->magick_wand TSRMLS_CC);
 
 		if (!image) {
 			continue;
 		}
-		
+
 		decode = dmtxDecodeCreate(image, intern->options.shrink);
-		
+
 		if (!decode) {
 			efree(image->pxl);
 			dmtxImageDestroy(&image);
 			continue;
 		}
-		
+
 		dmtxDecodeSetProp(decode, DmtxPropScanGap, scan_gap);
 
 		/**
@@ -681,32 +679,31 @@ PHP_METHOD(dmtxread, getinfo)
 		 * @author Mykhailo Stadnyk <mikhus@gmail.com>
 		 */
 		dmtxDecodeSetProp(decode, DmtxPropScheme, intern->options.scheme);
-		
+
 		if (intern->scan_region.active) {
-			
+
 			if (intern->scan_region.x_max > image->width) {
 				intern->scan_region.x_max = image->width;
 			}
 
 			if (intern->scan_region.y_max > image->height) {
 				intern->scan_region.y_max = image->height;
-			}			
-			
+			}
+
 			if (dmtxDecodeSetProp(decode, DmtxPropXmin, intern->scan_region.x_min) == DmtxFail ||
 				dmtxDecodeSetProp(decode, DmtxPropXmax, intern->scan_region.x_max) == DmtxFail ||
 				dmtxDecodeSetProp(decode, DmtxPropYmin, intern->scan_region.y_min) == DmtxFail ||
 				dmtxDecodeSetProp(decode, DmtxPropYmax, intern->scan_region.y_max) == DmtxFail) {
-					
 					PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to set scan region");
 				}
 		}
-		
+
 		if (dmtxDecodeSetProp(decode, DmtxPropSymbolSize, intern->options.symbol) == DmtxFail) {
 			efree(image->pxl);
 			dmtxImageDestroy(&image);
 			PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to set symbol");
 		}
-		
+
 		/* Current page is an array of regions */
 		MAKE_STD_ZVAL(current_page);
 		array_init(current_page);
@@ -728,10 +725,10 @@ PHP_METHOD(dmtxread, getinfo)
 			if (!region) {
 				break;
 			}
-			
+
 			/* Convert region info to php array */
 			region_array = _php_dmtx_region_to_array(decode, region, type, corrections TSRMLS_CC);
-			
+
 			if (region_array) {
 				add_next_index_zval(current_page, region_array);
 			}
@@ -757,7 +754,7 @@ PHP_METHOD(dmtxwrite, __construct)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s!", &message, &message_len) == FAILURE) {
 		return;
 	}
-	
+
 	if (!message || message_len == 0) {
 		return;
 	}
@@ -766,7 +763,7 @@ PHP_METHOD(dmtxwrite, __construct)
 		PHP_DMTX_THROW_GENERIC_EXCEPTION("The message is larger than the maximum allowed size");
 	}
 
-	intern = (php_dmtx_write_object *)zend_object_store_get_object(getThis() TSRMLS_CC);	
+	intern = (php_dmtx_write_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 	memset(intern->message, '\0', DMTXWRITE_BUFFER_SIZE);
 	strncpy(intern->message, message, message_len);
 	intern->message_len = message_len;
@@ -792,7 +789,7 @@ PHP_METHOD(dmtxwrite, setmessage)
 	}
 
 	intern = (php_dmtx_write_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-	
+
 	memset(intern->message, '\0', DMTXWRITE_BUFFER_SIZE);
 	strncpy(intern->message, message, message_len);
 	intern->message_len = message_len;
@@ -866,7 +863,7 @@ PHP_METHOD(dmtxwrite, save)
 	}
 
 	encode = dmtxEncodeCreate();
-	
+
 	/* Pack as RGB */
 	dmtxEncodeSetProp(encode, DmtxPropPixelPacking, DmtxPack24bppRGB);
 	dmtxEncodeSetProp(encode, DmtxPropSizeRequest, symbol);
@@ -875,7 +872,7 @@ PHP_METHOD(dmtxwrite, save)
 	 * Sets selected encoding scheme
 	 */
 	dmtxEncodeSetProp(encode, DmtxPropScheme, intern->scheme);
-	
+
 	if (type == PHP_DMTX_MOSAIC) {
 		status = dmtxEncodeDataMosaic(encode, intern->message_len, (unsigned char *)intern->message);
 	} else {
@@ -914,7 +911,7 @@ PHP_METHOD(dmtxwrite, save)
 static void php_dmtx_object_free_storage(void *object TSRMLS_DC)
 {
 	php_dmtx_object *intern = (php_dmtx_object *)object;
-	
+
 	if (!intern) {
 		return;
 	}
@@ -926,7 +923,7 @@ static void php_dmtx_object_free_storage(void *object TSRMLS_DC)
 static void php_dmtx_read_object_free_storage(void *object TSRMLS_DC)
 {
 	php_dmtx_read_object *intern = (php_dmtx_read_object *)object;
-	
+
 	if (!intern) {
 		return;
 	}
@@ -939,7 +936,7 @@ static void php_dmtx_read_object_free_storage(void *object TSRMLS_DC)
 static void php_dmtx_write_object_free_storage(void *object TSRMLS_DC)
 {
 	php_dmtx_write_object *intern = (php_dmtx_write_object *)object;
-	
+
 	if (!intern) {
 		return;
 	}
@@ -954,11 +951,11 @@ static zend_object_value php_dmtx_object_new(zend_class_entry *class_type TSRMLS
 	zval *tmp;
 	zend_object_value retval;
 	php_dmtx_object *intern;
-	
+
 	/* Allocate memory for it */
 	intern = emalloc(sizeof(php_dmtx_read_object));
 	memset(&intern->zo, 0, sizeof(php_dmtx_read_object));
-	
+
 	zend_object_std_init(&intern->zo, class_type TSRMLS_CC);
 	#if PHP_VERSION_ID < 50399
 		zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref,(void *) &tmp, sizeof(zval *));
@@ -975,26 +972,26 @@ static zend_object_value php_dmtx_read_object_new(zend_class_entry *class_type T
 	zval *tmp;
 	zend_object_value retval;
 	php_dmtx_read_object *intern;
-	
+
 	/* Allocate memory for it */
 	intern = emalloc(sizeof(php_dmtx_read_object));
 	memset(&intern->zo, 0, sizeof(php_dmtx_read_object));
 
 	intern->magick_wand = NewMagickWand();
-	
+
 	intern->options.timeout_ms = -1;
 	intern->options.start = -1;
 	intern->options.limit = -1;
 	intern->options.symbol = DmtxSymbolShapeAuto;
 	intern->options.shrink = 1;
 	intern->options.scheme = PhpDmtxSchemeBase256;
-	
+
 	intern->scan_region.x_min = 0;
 	intern->scan_region.x_max = 0;
-	
+
 	intern->scan_region.y_min = 0;
 	intern->scan_region.y_max = 0;
-	
+
 	intern->scan_region.active = 0;
 
 	zend_object_std_init(&intern->zo, class_type TSRMLS_CC);
@@ -1013,7 +1010,7 @@ static zend_object_value php_dmtx_write_object_new(zend_class_entry *class_type 
 	zval *tmp;
 	zend_object_value retval;
 	php_dmtx_write_object *intern;
-	
+
 	/* Allocate memory for it */
 	intern = emalloc(sizeof(php_dmtx_write_object));
 	memset(&intern->zo, 0, sizeof(php_dmtx_write_object));
@@ -1049,7 +1046,7 @@ PHP_MINIT_FUNCTION(dmtx)
 	INIT_CLASS_ENTRY(ce, PHP_DMTX_EXCEPTION_SC_NAME, NULL);
 	php_dmtx_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C), NULL TSRMLS_CC);
 	php_dmtx_exception_class_entry->ce_flags |= ZEND_ACC_FINAL;
-	
+
 	/*
 		Initialize the class (dmtx). This class holds the constants
 	*/
@@ -1063,7 +1060,7 @@ PHP_MINIT_FUNCTION(dmtx)
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_SQUARE_COUNT", DmtxSymbolSquareCount);
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_RECT_AUTO", DmtxSymbolRectAuto);
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_RECT_COUNT", DmtxSymbolRectCount);
-	
+
 	/* Different types */
 	PHP_DMTX_REGISTER_CONST_LONG("TYPE_MATRIX", PHP_DMTX_MATRIX);
 	PHP_DMTX_REGISTER_CONST_LONG("TYPE_MOSAIC", PHP_DMTX_MOSAIC);
@@ -1078,7 +1075,7 @@ PHP_MINIT_FUNCTION(dmtx)
 	PHP_DMTX_REGISTER_CONST_LONG("SCHEME_X12", PhpDmtxSchemeX12);
 	PHP_DMTX_REGISTER_CONST_LONG("SCHEME_EDITFACT", PhpDmtxSchemeEdifact);
 	PHP_DMTX_REGISTER_CONST_LONG("SCHEME_BASE256", PhpDmtxSchemeBase256);
-	
+
 	/*
 		Initialize the class (dmtx read)
 	*/
