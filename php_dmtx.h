@@ -22,7 +22,7 @@
 
 /* Define Extension Properties */
 #define PHP_DMTX_EXTNAME "dmtx"
-#define PHP_DMTX_EXTVER  "0.0.2-dev"
+#define PHP_DMTX_EXTVER  "0.0.3-dev"
 
 #define PHP_DMTX_SC_NAME "dmtx"
 #define PHP_DMTX_READ_SC_NAME "dmtxRead"

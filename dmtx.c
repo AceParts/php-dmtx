@@ -177,6 +177,8 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(dmtxwrite_save_args, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, module)
+	ZEND_ARG_INFO(0, margin)
 	ZEND_ARG_INFO(0, symbol)
 	ZEND_ARG_INFO(0, type)
 ZEND_END_ARG_INFO()
@@ -838,17 +840,17 @@ PHP_METHOD(dmtxwrite, getscheme)
 }
 /* }}} */
 
-/* {{{ proto bool dmtxWrite::save(string filename[, int symbol, int type])
+/* {{{ proto bool dmtxWrite::save(string filename[, int module, int margin, int symbol, int type])
 	Saves the message into a file */
 PHP_METHOD(dmtxwrite, save)
 {
  	php_dmtx_write_object *intern;
 	char *filename;
 	int filename_len, status;
-	long symbol = DmtxSymbolSquareAuto, width, height, type = PHP_DMTX_MATRIX;
+	long symbol = DmtxSymbolSquareAuto, width, height, type = PHP_DMTX_MATRIX, module = 2, margin = 5;
 	DmtxEncode *encode;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ls!", &filename, &filename_len, &symbol, &type) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ls!", &filename, &filename_len, &module, &margin, &symbol, &type) == FAILURE) {
 		return;
 	}
 
@@ -868,6 +870,12 @@ PHP_METHOD(dmtxwrite, save)
 	dmtxEncodeSetProp(encode, DmtxPropPixelPacking, DmtxPack24bppRGB);
 	dmtxEncodeSetProp(encode, DmtxPropSizeRequest, symbol);
 
+    /* Set module size */
+    dmtxEncodeSetProp(encode, DmtxPropModuleSize, module);
+
+    /* Set margin size */
+    dmtxEncodeSetProp(encode, DmtxPropMarginSize, margin);
+    
 	/**
 	 * Sets selected encoding scheme
 	 */
