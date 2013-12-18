@@ -846,10 +846,10 @@ PHP_METHOD(dmtxwrite, save)
  	php_dmtx_write_object *intern;
 	char *filename;
 	int filename_len, status;
-	long symbol = DmtxSymbolSquareAuto, width, height, type = PHP_DMTX_MATRIX, size = 5;
+	long symbol = DmtxSymbolSquareAuto, width, height, type = PHP_DMTX_MATRIX, size = 2;
 	DmtxEncode *encode;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ls!", &filename, &filename_len, &symbol, &type) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ls!", &filename, &filename_len, &size, &symbol, &type) == FAILURE) {
 		return;
 	}
 
