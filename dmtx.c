@@ -717,7 +717,7 @@ PHP_METHOD(dmtxread, getinfo)
 
 			/* Let's see how it goes */
 			if (intern->options.timeout_ms >= 0) {
-            	timeout = dmtxTimeAdd(dmtxTimeNow(), intern->options.timeout_ms);
+				timeout = dmtxTimeAdd(dmtxTimeNow(), intern->options.timeout_ms);
 				region = dmtxRegionFindNext(decode, &timeout);
 			} else {
 				region = dmtxRegionFindNext(decode, NULL);
@@ -843,92 +843,92 @@ PHP_METHOD(dmtxwrite, getscheme)
 static char *
 GetImageFormat(char *filename)
 {
-   char *ptr = NULL;
+	char *ptr = NULL;
 
-   /* Derive format from filename extension */
-   if(filename != NULL) {
-      ptr = strrchr(filename, '.');
-      if(ptr != NULL)
-         ptr++;
-   }
+	/* Derive format from filename extension */
+	if (filename != NULL) {
+		ptr = strrchr(filename, '.');
+		if (ptr != NULL)
+			ptr++;
+	}
 
-   /* If still undefined then use format argument */
-   if(ptr == NULL || strlen(ptr) == 0)
-      ptr = "png";
+	/* If still undefined then use format argument */
+	if (ptr == NULL || strlen(ptr) == 0)
+		ptr = "png";
 
-   return ptr;
+	return ptr;
 }
 
 static DmtxBoolean
 StrNCmpI(const char *s1, const char *s2, size_t n)
 {
-   size_t i;
+	size_t i;
 
-   if(s1 == NULL || s2 == NULL || n == 0)
-      return DmtxFalse;
+	if (s1 == NULL || s2 == NULL || n == 0)
+		return DmtxFalse;
 
-   for(i = 0; i < n; i++) {
-      if(tolower(s1[i]) != tolower(s2[i]))
-         return DmtxFalse;
-      if(s1[i] == '\0' || s2[i] == '\0')
-         break;
-   }
+	for (i = 0; i < n; i++) {
+		if (tolower(s1[i]) != tolower(s2[i]))
+			return DmtxFalse;
+		if (s1[i] == '\0' || s2[i] == '\0')
+			break;
+	}
 
-   return DmtxTrue;
+	return DmtxTrue;
 }
 
 static void
 WriteImageFile(php_dmtx_write_object *intern, DmtxEncode *enc, char *filename)
 {
-    long width, height;
-    
-    width = dmtxImageGetProp(enc->image, DmtxPropWidth);
-    height = dmtxImageGetProp(enc->image, DmtxPropHeight);
+	long width, height;
 
-    /* Clear if previous images */
-    if (MagickGetNumberImages(intern->magick_wand) > 0) {
-        ClearMagickWand(intern->magick_wand);
-    }
+	width = dmtxImageGetProp(enc->image, DmtxPropWidth);
+	height = dmtxImageGetProp(enc->image, DmtxPropHeight);
 
-    /* Import the pixels */
-    if (MagickConstituteImage(intern->magick_wand, width, height, "RGB", CharPixel, enc->image->pxl) == MagickFalse) {
-        dmtxEncodeDestroy(&enc);
-        PHP_DMTX_THROW_IMAGE_EXCEPTION(intern->magick_wand, "Failed to import image");
-    }
+	/* Clear if previous images */
+	if (MagickGetNumberImages(intern->magick_wand) > 0) {
+		ClearMagickWand(intern->magick_wand);
+	}
 
-    if (MagickWriteImage(intern->magick_wand, filename) == MagickFalse) {
-        dmtxEncodeDestroy(&enc);
-        PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to write image");
-    }
+	/* Import the pixels */
+	if (MagickConstituteImage(intern->magick_wand, width, height, "RGB", CharPixel, enc->image->pxl) == MagickFalse) {
+		dmtxEncodeDestroy(&enc);
+		PHP_DMTX_THROW_IMAGE_EXCEPTION(intern->magick_wand, "Failed to import image");
+	}
+
+	if (MagickWriteImage(intern->magick_wand, filename) == MagickFalse) {
+		dmtxEncodeDestroy(&enc);
+		PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to write image");
+	}
 }
 
 static void
 WriteSvgFile(DmtxEncode *enc, char *filename, char *format, int type)
 {
-   int col, row, rowInv;
-   int symbolCols, symbolRows;
-   int width, height, module;
-   int defineOnly = DmtxFalse;
-   unsigned char mosaicRed, mosaicGrn, mosaicBlu;
-   char *idString = NULL;
-   char style[100];
-   FILE *fp;
+	int col, row, rowInv;
+	int symbolCols, symbolRows;
+	int width, height, module;
+	int defineOnly = DmtxFalse;
+	unsigned char mosaicRed, mosaicGrn, mosaicBlu;
+	char *idString = NULL;
+	char style[100];
+	FILE *fp;
 
-    fp = fopen(filename, "wb");
-    if(fp == NULL) {
-      PHP_DMTX_THROW_GENERIC_EXCEPTION("Unable to create output file.");
-    }
+	fp = fopen(filename, "wb");
+	if (fp == NULL) {
+		PHP_DMTX_THROW_GENERIC_EXCEPTION("Unable to create output file.");
+	}
 
 
-   width = 2 * enc->marginSize + (enc->region.symbolCols * enc->moduleSize);
-   height = 2 * enc->marginSize + (enc->region.symbolRows * enc->moduleSize);
+	width = 2 * enc->marginSize + (enc->region.symbolCols * enc->moduleSize);
+	height = 2 * enc->marginSize + (enc->region.symbolRows * enc->moduleSize);
 
-   symbolCols = dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, enc->region.sizeIdx);
-   symbolRows = dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, enc->region.sizeIdx);
+	symbolCols = dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, enc->region.sizeIdx);
+	symbolRows = dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, enc->region.sizeIdx);
 
-   /* Print SVG Header */
-   if(defineOnly == DmtxFalse) {
-      fprintf(fp, "\
+	/* Print SVG Header */
+	if (defineOnly == DmtxFalse) {
+		fprintf(fp, "\
 <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\
 <!-- Created with libdmtx (https://github.com/dmtx/) -->\n\
 <svg\n\
@@ -940,122 +940,121 @@ WriteSvgFile(DmtxEncode *enc, char *filename, char *format, int type)
    height=\"%d\"\n\
    id=\"svg2\">\n\
   <defs>\n", width, height);
-   }
+	}
 
-   fprintf(fp, "  <symbol id=\"%s\">\n", idString);
-   fprintf(fp, "    <desc>Layout:%dx%d Symbol:%dx%d Data Matrix</desc>\n",
-         width, height, symbolCols, symbolRows);
+	fprintf(fp, "  <symbol id=\"%s\">\n", idString);
+	fprintf(fp, "    <desc>Layout:%dx%d Symbol:%dx%d Data Matrix</desc>\n",
+		width, height, symbolCols, symbolRows);
 
-   /* Write Data Matrix ON modules */
-   for(row = 0; row < enc->region.symbolRows; row++) {
-      rowInv = enc->region.symbolRows - row - 1;
-      for(col = 0; col < enc->region.symbolCols; col++) {
-         module = dmtxSymbolModuleStatus(enc->message, enc->region.sizeIdx, row, col);
-         if(type == PHP_DMTX_MOSAIC) {
-            mosaicRed = (module & DmtxModuleOnRed) ? 0x00 : 0xff;
-            mosaicGrn = (module & DmtxModuleOnGreen) ? 0x00 : 0xff;
-            mosaicBlu = (module & DmtxModuleOnBlue) ? 0x00 : 0xff;
-            snprintf(style, 100, "style=\"fill:#%02x%02x%02x;fill-opacity:1;stroke:none\" ",
-                  mosaicRed, mosaicGrn, mosaicBlu);
-         }
-         else {
-            style[0] = '\0';
-         }
+	/* Write Data Matrix ON modules */
+	for (row = 0; row < enc->region.symbolRows; row++) {
+		rowInv = enc->region.symbolRows - row - 1;
+		for (col = 0; col < enc->region.symbolCols; col++) {
+			module = dmtxSymbolModuleStatus(enc->message, enc->region.sizeIdx, row, col);
+			if (type == PHP_DMTX_MOSAIC) {
+				mosaicRed = (module & DmtxModuleOnRed) ? 0x00 : 0xff;
+				mosaicGrn = (module & DmtxModuleOnGreen) ? 0x00 : 0xff;
+				mosaicBlu = (module & DmtxModuleOnBlue) ? 0x00 : 0xff;
+				snprintf(style, 100, "style=\"fill:#%02x%02x%02x;fill-opacity:1;stroke:none\" ",
+					mosaicRed, mosaicGrn, mosaicBlu);
+			} else {
+				style[0] = '\0';
+			}
 
-         if(module & DmtxModuleOn) {
-            fprintf(fp, "    <rect width=\"%d\" height=\"%d\" x=\"%d\" y=\"%d\" %s/>\n",
-                  enc->moduleSize, enc->moduleSize,
-                  col * enc->moduleSize + enc->marginSize,
-                  rowInv * enc->moduleSize + enc->marginSize, style);
-         }
-      }
-   }
+			if (module & DmtxModuleOn) {
+				fprintf(fp, "    <rect width=\"%d\" height=\"%d\" x=\"%d\" y=\"%d\" %s/>\n",
+					enc->moduleSize, enc->moduleSize,
+					col * enc->moduleSize + enc->marginSize,
+					rowInv * enc->moduleSize + enc->marginSize, style);
+			}
+		}
+	}
 
-   fprintf(fp, "  </symbol>\n");
+	fprintf(fp, "  </symbol>\n");
 
-   /* Close SVG document */
-   if(defineOnly == DmtxFalse) {
-      fprintf(fp, "\
+	/* Close SVG document */
+	if (defineOnly == DmtxFalse) {
+		fprintf(fp, "\
   </defs>\n\
 \n\
   <use xlink:href=\"#%s\" x='0' y='0' style=\"fill:#000000;fill-opacity:1;stroke:none\" />\n\
 \n\
 </svg>\n", idString);
-   }
-   
-   fclose(fp);
+	}
+
+	fclose(fp);
 }
 
 /* {{{ proto bool dmtxWrite::save(string filename[,int type, int symbol, int module, int margin])
 	Saves the message into a file */
 PHP_METHOD(dmtxwrite, save)
 {
-    php_dmtx_write_object *intern;
-    char *filename;
-    int filename_len;
-    int status;
-    long symbol = DmtxSymbolSquareAuto;
-    long type = PHP_DMTX_MATRIX;
-    int module = 2;
-    int margin = 5;
-    char *format;
-    DmtxEncode *encode;
-    
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|llll", &filename, &filename_len, &type, &symbol, &module, &margin) == FAILURE) {
-        return;
-    }
-    
-    intern = (php_dmtx_write_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+	php_dmtx_write_object *intern;
+	char *filename;
+	int filename_len;
+	int status;
+	long symbol = DmtxSymbolSquareAuto;
+	long type = PHP_DMTX_MATRIX;
+	int module = 2;
+	int margin = 5;
+	char *format;
+	DmtxEncode *encode;
 
-    if (intern->message_len == 0) {
-        PHP_DMTX_THROW_GENERIC_EXCEPTION("The object does not contain a message");
-    }
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|llll", &filename, &filename_len, &type, &symbol, &module, &margin) == FAILURE) {
+		return;
+	}
 
-    if (strlen(filename) >= MAXPATHLEN) {
-        PHP_DMTX_THROW_GENERIC_EXCEPTION("The filename exceeds the maximum allowed length");
-    }
+	intern = (php_dmtx_write_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
 
-    encode = dmtxEncodeCreate();
+	if (intern->message_len == 0) {
+		PHP_DMTX_THROW_GENERIC_EXCEPTION("The object does not contain a message");
+	}
 
-    /* Pack as RGB */
-    dmtxEncodeSetProp(encode, DmtxPropPixelPacking, DmtxPack24bppRGB);
-    /* Set Symbol shape/size */
-    dmtxEncodeSetProp(encode, DmtxPropSizeRequest, symbol);
-    /* Set module size */
-    dmtxEncodeSetProp(encode, DmtxPropModuleSize, module);
-    /* Set margin size */
-    dmtxEncodeSetProp(encode, DmtxPropMarginSize, margin);
+	if (strlen(filename) >= MAXPATHLEN) {
+		PHP_DMTX_THROW_GENERIC_EXCEPTION("The filename exceeds the maximum allowed length");
+	}
 
-    /**
-     * Sets selected encoding scheme
-     */
-    dmtxEncodeSetProp(encode, DmtxPropScheme, intern->scheme);
+	encode = dmtxEncodeCreate();
 
-    if (type == PHP_DMTX_MOSAIC) {
-        status = dmtxEncodeDataMosaic(encode, intern->message_len, (unsigned char *)intern->message);
-    } else {
-        status = dmtxEncodeDataMatrix(encode, intern->message_len, (unsigned char *)intern->message);
-    }
+	/* Pack as RGB */
+	dmtxEncodeSetProp(encode, DmtxPropPixelPacking, DmtxPack24bppRGB);
+	/* Set Symbol shape/size */
+	dmtxEncodeSetProp(encode, DmtxPropSizeRequest, symbol);
+	/* Set module size */
+	dmtxEncodeSetProp(encode, DmtxPropModuleSize, module);
+	/* Set margin size */
+	dmtxEncodeSetProp(encode, DmtxPropMarginSize, margin);
 
-    if (status == DmtxFail) {
-        dmtxEncodeDestroy(&encode);
-        PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to encode the image");
-    }
+	/**
+	 * Sets selected encoding scheme
+	 */
+	dmtxEncodeSetProp(encode, DmtxPropScheme, intern->scheme);
 
-    format = GetImageFormat(filename);
-    if(format == NULL) {
-       format = "png";
-    }
+	if (type == PHP_DMTX_MOSAIC) {
+		status = dmtxEncodeDataMosaic(encode, intern->message_len, (unsigned char *)intern->message);
+	} else {
+		status = dmtxEncodeDataMatrix(encode, intern->message_len, (unsigned char *)intern->message);
+	}
 
-    /* @todo pass through correct required params */
-    if(StrNCmpI(format, "svg", 3) == DmtxTrue) {
-       WriteSvgFile(encode, filename, format, type);
-    } else {
-       WriteImageFile(intern, encode, filename);
-    }
+	if (status == DmtxFail) {
+		dmtxEncodeDestroy(&encode);
+		PHP_DMTX_THROW_GENERIC_EXCEPTION("Failed to encode the image");
+	}
 
-    dmtxEncodeDestroy(&encode);
-    RETURN_TRUE;
+	format = GetImageFormat(filename);
+	if (format == NULL) {
+		format = "png";
+	}
+
+	/* @todo pass through correct required params */
+	if (StrNCmpI(format, "svg", 3) == DmtxTrue) {
+		WriteSvgFile(encode, filename, format, type);
+	} else {
+		WriteImageFile(intern, encode, filename);
+	}
+
+	dmtxEncodeDestroy(&encode);
+	RETURN_TRUE;
 }
 
 /* Initialization */
@@ -1206,46 +1205,45 @@ PHP_MINIT_FUNCTION(dmtx)
 	php_dmtx_sc_entry = zend_register_internal_class(&ce TSRMLS_CC);
 
 	/* Register constants */
-        
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_SQUARE_COUNT", DmtxSymbolSquareCount);
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_RECT_COUNT", DmtxSymbolRectCount);
-	
-        /** Auto Shapes */
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_SHAPE_AUTO", DmtxSymbolShapeAuto);
+
+	/** Auto Shapes */
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_SHAPE_AUTO", DmtxSymbolShapeAuto);
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_SQUARE_AUTO", DmtxSymbolSquareAuto);
 	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_RECT_AUTO", DmtxSymbolRectAuto);
-        
-        /** Defined Shapes */
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_10_BY_10", DmtxSymbol10x10);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_12", DmtxSymbol12x12);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_14_BY_14", DmtxSymbol14x14);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_16", DmtxSymbol16x16);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_18_BY_18", DmtxSymbol18x18);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_20_BY_20", DmtxSymbol20x20);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_22_BY_22", DmtxSymbol22x22);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_24_BY_24", DmtxSymbol24x24);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_26_BY_26", DmtxSymbol26x26);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_32_BY_32", DmtxSymbol32x32);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_36_BY_36", DmtxSymbol36x36);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_40_BY_40", DmtxSymbol40x40);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_44_BY_44", DmtxSymbol44x44);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_48_BY_48", DmtxSymbol48x48);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_52_BY_52", DmtxSymbol52x52);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_64_BY_64", DmtxSymbol64x64);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_72_BY_72", DmtxSymbol72x72);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_80_BY_80", DmtxSymbol80x80);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_88_BY_88", DmtxSymbol88x88);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_96_BY_96", DmtxSymbol96x96);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_104_BY_104", DmtxSymbol104x104);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_120_BY_120", DmtxSymbol120x120);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_132_BY_132", DmtxSymbol132x132);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_144_BY_144", DmtxSymbol144x144);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_8_BY_18", DmtxSymbol8x18);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_8_BY_32", DmtxSymbol8x32);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_260", DmtxSymbol12x26);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_360", DmtxSymbol12x36);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_360", DmtxSymbol16x36);
-        PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_480", DmtxSymbol16x48);
+
+	/** Defined Shapes */
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_10_BY_10", DmtxSymbol10x10);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_12", DmtxSymbol12x12);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_14_BY_14", DmtxSymbol14x14);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_16", DmtxSymbol16x16);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_18_BY_18", DmtxSymbol18x18);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_20_BY_20", DmtxSymbol20x20);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_22_BY_22", DmtxSymbol22x22);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_24_BY_24", DmtxSymbol24x24);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_26_BY_26", DmtxSymbol26x26);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_32_BY_32", DmtxSymbol32x32);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_36_BY_36", DmtxSymbol36x36);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_40_BY_40", DmtxSymbol40x40);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_44_BY_44", DmtxSymbol44x44);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_48_BY_48", DmtxSymbol48x48);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_52_BY_52", DmtxSymbol52x52);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_64_BY_64", DmtxSymbol64x64);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_72_BY_72", DmtxSymbol72x72);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_80_BY_80", DmtxSymbol80x80);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_88_BY_88", DmtxSymbol88x88);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_96_BY_96", DmtxSymbol96x96);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_104_BY_104", DmtxSymbol104x104);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_120_BY_120", DmtxSymbol120x120);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_132_BY_132", DmtxSymbol132x132);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_144_BY_144", DmtxSymbol144x144);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_8_BY_18", DmtxSymbol8x18);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_8_BY_32", DmtxSymbol8x32);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_260", DmtxSymbol12x26);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_12_BY_360", DmtxSymbol12x36);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_360", DmtxSymbol16x36);
+	PHP_DMTX_REGISTER_CONST_LONG("SYMBOL_16_BY_480", DmtxSymbol16x48);
 
 	/* Different types */
 	PHP_DMTX_REGISTER_CONST_LONG("TYPE_MATRIX", PHP_DMTX_MATRIX);
@@ -1319,5 +1317,3 @@ zend_module_entry dmtx_module_entry =
 #ifdef COMPILE_DL_DMTX
 ZEND_GET_MODULE(dmtx)
 #endif
-
-
